@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"> <!-- Кодировка страницы (русский текст требует UTF-8) -->
+    <title>Генератор подписи</title> <!-- Заголовок страницы в браузере -->
+    <style>
+        /* Стили для всего тела страницы */
+        body {
+            font-family: Arial, sans-serif; /* Шрифт по умолчанию для текста (Arial или системный без засечек) */
+            display: flex; /* Используем flexbox для удобного выравнивания элементов */
+            flex-direction: column; /* Элементы выстраиваются вертикально */
+            align-items: center; /* Центрируем элементы по горизонтали */
+            padding: 20px; /* Внутренний отступ страницы от краёв */
+            background-color: #f0f0f0; /* Светло-серый фон страницы */
+        }
+
+        /* Стили для заголовка с логотипом */
+        .header {
+            display: flex; /* Flexbox для выравнивания логотипа и текста в строке */
+            align-items: center; /* Вертикальное центрирование элементов внутри */
+            margin-bottom: 20px; /* Отступ снизу от заголовка до формы */
+        }
+
+        /* Стили для изображения логотипа в заголовке */
+        .header img {
+            width: 171px; /* Ширина логотипа */
+            height: 88px; /* Высота логотипа (совпадает с холстом) */
+            margin-right: 15px; /* Отступ справа от логотипа до текста */
+        }
+
+        /* Стили для текста заголовка "Создание подписи" */
+        .header h2 {
+            margin: 0; /* Убираем стандартные отступы заголовка */
+            font-size: 24px; /* Размер шрифта заголовка */
+            color: #FF6200; /* Цвет текста — оранжевый, как у кнопки */
+            font-family: 'Helvetica', sans-serif; /* Шрифт Helvetica (или системный без засечек) */
+            font-weight: 300; /* Тонкий вес шрифта (light) */
+        }
+
+        /* Стили для контейнера с полями ввода */
+        .input-container {
+            display: flex; /* Flexbox для вертикального расположения полей */
+            flex-direction: column; /* Поля выстраиваются друг под другом */
+            align-items: center; /* Центрирование полей по горизонтали */
+            gap: 15px; /* Расстояние между полями ввода */
+            margin-bottom: 20px; /* Отступ снизу до кнопки */
+        }
+
+        /* Стили для группы ввода (лейбл + инпут) */
+        .input-group {
+            display: flex; /* Flexbox для выравнивания лейбла и поля */
+            flex-direction: column; /* Лейбл над полем ввода */
+            align-items: flex-start; /* Выравнивание по левому краю */
+            width: 220px; /* Фиксированная ширина полей ввода */
+        }
+
+        /* Стили для лейблов полей ввода */
+        .input-group label {
+            margin-bottom: 5px; /* Отступ снизу от лейбла до поля */
+            font-size: 14px; /* Размер шрифта лейбла */
+        }
+
+        /* Стили для текстовых полей ввода */
+        .input-group input[type="text"] {
+            padding: 5px; /* Внутренний отступ внутри поля */
+            width: 100%; /* Ширина поля равна ширине контейнера (220px) */
+            box-sizing: border-box; /* Учитываем padding в общей ширине */
+        }
+
+        /* Стили для чекбокса внутри лейбла */
+        .input-group input[type="checkbox"] {
+            margin-right: 5px; /* Отступ справа от чекбокса до текста */
+        }
+
+        /* Скрытие поля мобильного телефона, когда чекбокс не отмечен */
+        #mobileGroup.hidden {
+            visibility: hidden; /* Делает блок невидимым, но он занимает место */
+        }
+
+        /* Показ поля мобильного телефона по умолчанию (до активации JS) */
+        #mobileGroup {
+            visibility: visible; /* Блок виден изначально */
+        }
+
+        /* Стили для кнопки "Создать подпись" */
+        button {
+            padding: 5px 10px; /* Внутренние отступы кнопки (вертикаль/горизонталь) */
+            background-color: #FF6200; /* Оранжевый фон кнопки */
+            color: white; /* Белый цвет текста кнопки */
+            border: none; /* Убираем стандартную обводку */
+            cursor: pointer; /* Курсор "рука" при наведении */
+            margin-top: 10px; /* Отступ сверху от формы */
+        }
+
+        /* Стили для кнопки при наведении курсора */
+        button:hover {
+            background-color: #e65c00; /* Более тёмный оранжевый при наведении */
+        }
+    </style>
+</head>
+<body>
+    <!-- Заголовок с логотипом и текстом -->
+    <div class="header">
+        <img src="logo.png" alt="Логотип"> <!-- Логотип слева -->
+        <h2>Создание подписи</h2> <!-- Текст заголовка -->
+    </div>
+
+    <!-- Контейнер с полями ввода -->
+    <div class="input-container">
+        <!-- Поле для номера офиса -->
+        <div class="input-group">
+            <label for="office">Номер офиса:</label>
+            <input type="text" id="office" placeholder="330">
+        </div>
+
+        <!-- Поле для добавочного номера -->
+        <div class="input-group">
+            <label for="extension">Добавочный номер (4 цифры):</label>
+            <input type="text" id="extension" placeholder="2144" maxlength="4">
+        </div>
+
+        <!-- Чекбокс для показа мобильного телефона -->
+        <div class="input-group">
+            <label>
+                <input type="checkbox" id="showMobile">
+                Показывать сотовый телефон
+            </label>
+        </div>
+
+        <!-- Поле для мобильного телефона (скрыто по умолчанию) -->
+        <div class="input-group" id="mobileGroup" class="hidden">
+            <label for="mobile">Сотовый телефон:</label>
+            <input type="text" id="mobile" placeholder="8 999 789 10 12">
+        </div>
+
+        <!-- Поле для email -->
+        <div class="input-group">
+            <label for="email">Email:</label>
+            <input type="text" id="email" placeholder="name@domain.ru">
+        </div>
+    </div>
+
+    <!-- Кнопка для генерации подписи и копирования в буфер -->
+    <button onclick="generateSignature()">Создать подпись</button>
+
+    <!-- Отступ перед холстом -->
+    <br>
+
+    <!-- Холст для отрисовки подписи -->
+    <canvas id="signature" width="600" height="88" style="border: 1px solid #ccc; margin-top: 20px;"></canvas>
+
+    <script>
+        // Получение элементов DOM для работы с ними
+        const canvas = document.getElementById('signature'); // Холст для подписи
+        const ctx = canvas.getContext('2d'); // 2D-контекст для рисования на холсте
+        const mobileGroup = document.getElementById('mobileGroup'); // Блок с полем мобильного телефона
+        const showMobileCheckbox = document.getElementById('showMobile'); // Чекбокс для показа мобильного
+
+        // Обработчик изменения состояния чекбокса
+        showMobileCheckbox.addEventListener('change', function() {
+            mobileGroup.classList.toggle('hidden', !this.checked); // Переключаем видимость поля мобильного
+        });
+
+        // Функция генерации подписи и копирования в буфер обмена
+        async function generateSignature() {
+            // Очистка холста перед новой отрисовкой
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff'; // Установка белого фона
+            ctx.fillRect(0, 0, canvas.width, canvas.height); // Заполнение холста белым
+
+            // Создание объектов изображений для логотипа и пиктограмм
+            const logo = new Image();
+            logo.src = 'logo.png'; // Путь к логотипу
+            const addressIcon = new Image();
+            addressIcon.src = 'address-icon.png'; // Путь к пиктограмме адреса
+            const phoneIcon = new Image();
+            phoneIcon.src = 'phone-icon.png'; // Путь к пиктограмме телефона
+            const emailIcon = new Image();
+            emailIcon.src = 'email-icon.png'; // Путь к пиктограмме email
+            const webIcon = new Image();
+            webIcon.src = 'web-icon.png'; // Путь к пиктограмме веб-сайта
+
+            let loadedImages = 0; // Счётчик загруженных изображений
+            const totalImages = 5; // Всего изображений (логотип + 4 пиктограммы)
+
+            // Функция проверки загрузки всех изображений
+            function checkAllImagesLoaded() {
+                loadedImages++;
+                if (loadedImages === totalImages) {
+                    renderContent(); // Запуск отрисовки, когда всё загружено
+                }
+            }
+
+            // Привязка обработчиков загрузки изображений
+            logo.onload = checkAllImagesLoaded;
+            addressIcon.onload = checkAllImagesLoaded;
+            phoneIcon.onload = checkAllImagesLoaded;
+            emailIcon.onload = checkAllImagesLoaded;
+            webIcon.onload = checkAllImagesLoaded;
+
+            // Обработка ошибок загрузки изображений (логи + продолжение)
+            logo.onerror = function() { console.error('Ошибка загрузки логотипа'); checkAllImagesLoaded(); };
+            addressIcon.onerror = function() { console.error('Ошибка загрузки address-icon.png'); checkAllImagesLoaded(); };
+            phoneIcon.onerror = function() { console.error('Ошибка загрузки phone-icon.png'); checkAllImagesLoaded(); };
+            emailIcon.onerror = function() { console.error('Ошибка загрузки email-icon.png'); checkAllImagesLoaded(); };
+            webIcon.onerror = function() { console.error('Ошибка загрузки web-icon.png'); checkAllImagesLoaded(); };
+
+            // Функция отрисовки содержимого подписи
+            function renderContent() {
+                // ===========================================================================
+                // НАСТРОЙКИ ФОРМАТИРОВАНИЯ ШАБЛОНА (ВЫДЕЛЕННЫЙ БЛОК)
+                // ===========================================================================
+                const fontSize = 11.5;          // Размер шрифта текста в пикселях (было 10 * 1.15)
+                const fontFamily = 'Calibri';   // Шрифт текста (можно заменить на Arial, Times и т.д.)
+                const textColor = '#000000';    // Цвет текста в HEX (чёрный по умолчанию)
+                const lineHeight = 14;          // Высота строки в пикселях (расстояние между строками)
+                const iconWidth = 13;           // Ширина пиктограмм в пикселях
+                const iconHeight = 10;          // Высота пиктограмм в пикселях
+                const iconOffset = 10;          // Отступ пиктограмм слева от текста в пикселях
+                const logoWidth = 171;          // Ширина логотипа в пикселях
+                const logoHeight = 88;          // Высота логотипа в пикселях (равна высоте холста)
+                const canvasWidth = 600;        // Ширина холста в пикселях
+                const canvasHeight = 88;        // Высота холста в пикселях
+                const logoPadding = 10;         // Отступ слева и справа от логотипа в пикселях
+                const textPadding = 20;         // Отступ текста справа от логотипа в пикселях
+                const fourLineOffset = (logoHeight - (4 * lineHeight)) / 2; // Отступ сверху для 4 строк (центрирование)
+                const fiveLineOffset = 10;      // Фиксированный отступ сверху для 5 строк
+                const iconYAdjust = (lineHeight - iconHeight) / 2; // Смещение пиктограмм для центрирования в строке
+                const textYAdjust = 10;         // Смещение текста относительно верха строки для выравнивания с пиктограммами
+                // ===========================================================================
+
+                // Установка шрифта и цвета текста на холсте
+                ctx.font = `${fontSize}px ${fontFamily}`;
+                ctx.fillStyle = textColor;
+
+                // Получение данных из полей ввода с дефолтными значениями
+                const office = document.getElementById('office').value || '330';
+                const address = `600005, г.Владимир, ул.Тракторная, д.45, офис ${office}`;
+                const extension = document.getElementById('extension').value || '2144';
+                const formattedExtension = `+7 (4922) 53-77-55 (${extension.padStart(4, '0')})`;
+                const mobile = document.getElementById('mobile').value || '';
+                const email = document.getElementById('email').value || 'name@domain.ru';
+                const web = 'abidev.ru';
+
+                // Подсчёт количества строк в зависимости от наличия мобильного номера
+                let lineCount = 4;
+                if (showMobileCheckbox.checked && mobile) {
+                    lineCount += 1;
+                }
+
+                // Отрисовка логотипа слева на холсте
+                ctx.drawImage(logo, logoPadding, 0, logoWidth, logoHeight);
+
+                // Расчёт горизонтальной позиции текста (справа от логотипа)
+                const logoRightEdge = logoPadding + logoWidth + logoPadding;
+                const textX = logoRightEdge + textPadding;
+
+                // Выбор начальной вертикальной позиции в зависимости от количества строк
+                let currentY = lineCount === 4 ? fourLineOffset : fiveLineOffset;
+
+                // Начальная позиция для отрисовки строк
+                let y = currentY;
+
+                // Отрисовка первой строки: адрес с пиктограммой
+                ctx.drawImage(addressIcon, textX - iconWidth - iconOffset, y + iconYAdjust, iconWidth, iconHeight);
+                ctx.fillText(address, textX, y + textYAdjust); // Текст выровнен с центром пиктограммы
+                y += lineHeight; // Переход к следующей строке
+
+                // Отрисовка второй строки: рабочий телефон с пиктограммой
+                ctx.drawImage(phoneIcon, textX - iconWidth - iconOffset, y + iconYAdjust, iconWidth, iconHeight);
+                ctx.fillText(formattedExtension, textX, y + textYAdjust); // Текст выровнен с центром пиктограммы
+                y += lineHeight; // Переход к следующей строке
+
+                // Отрисовка третьей строки (если есть): мобильный телефон с пиктограммой
+                if (showMobileCheckbox.checked && mobile) {
+                    ctx.drawImage(phoneIcon, textX - iconWidth - iconOffset, y + iconYAdjust, iconWidth, iconHeight);
+                    ctx.fillText(mobile, textX, y + textYAdjust); // Текст выровнен с центром пиктограммы
+                    y += lineHeight; // Переход к следующей строке
+                }
+
+                // Отрисовка предпоследней строки: email с пиктограммой
+                ctx.drawImage(emailIcon, textX - iconWidth - iconOffset, y + iconYAdjust, iconWidth, iconHeight);
+                ctx.fillText(email, textX, y + textYAdjust); // Текст выровнен с центром пиктограммы
+                y += lineHeight; // Переход к следующей строке
+
+                // Отрисовка последней строки: веб-сайт с пиктограммой
+                ctx.drawImage(webIcon, textX - iconWidth - iconOffset, y + iconYAdjust, iconWidth, iconHeight);
+                ctx.fillText(web, textX, y + textYAdjust); // Текст выровнен с центром пиктограммы
+
+                // Копирование изображения в буфер обмена
+                canvas.toBlob(async function(blob) {
+                    try {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ 'image/png': blob })
+                        ]);
+                        console.log('Изображение скопировано в буфер обмена!');
+                        alert('Подпись скопирована в буфер обмена. Вставьте её (Ctrl+V) куда угодно!');
+                    } catch (err) {
+                        console.error('Ошибка копирования в буфер обмена:', err);
+                        alert('Не удалось скопировать подпись в буфер обмена. Проверьте консоль.');
+                    }
+                }, 'image/png');
+            }
+        }
+    </script>
+</body>
+</html>
